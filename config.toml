@@ -1,0 +1,27 @@
+# Models under test. Pin the IDs before the run and don't change them mid-run.
+# The version that actually served each call is recorded in the run file anyway.
+
+# Responses per (item, model). 1 gives 360 responses to hand-score. 3 would
+# separate each model's run-to-run noise from the script effect, but triples
+# the scoring.
+samples = 1
+
+[[models]]
+name = "claude"              # frontier
+provider = "anthropic"
+model = "claude-opus-5-5"
+effort = "medium"            # the model's default, pinned explicitly
+max_tokens = 16000
+
+[[models]]
+name = "gpt"                 # a model from a different lab, mid-tier or older
+provider = "openai"
+model = "FILL_ME"            # an exact model ID from OpenAI's model list
+max_tokens = 16000
+
+[[models]]
+name = "open-weight"         # local, with stated multilingual support
+provider = "ollama"
+model = "FILL_ME"            # an Ollama tag, e.g. what `ollama list` shows; the digest is recorded
+base_url = "http://localhost:11434"
+max_tokens = 4096

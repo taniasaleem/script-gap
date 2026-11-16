@@ -1,0 +1,5 @@
+anthropic>=2.8
+openai>=3.51
+matplotlib>=3.11
+requests>=2.32
+pytest>=8
