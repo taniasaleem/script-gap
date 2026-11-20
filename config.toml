@@ -14,14 +14,16 @@ effort = "medium"            # the model's default, pinned explicitly
 max_tokens = 16000
 
 [[models]]
-name = "gpt"                 # a model from a different lab, mid-tier or older
+name = "gpt"                 # a model from a different lab, mid-tier
 provider = "openai"
-model = "FILL_ME"            # an exact model ID from OpenAI's model list
+model = "gpt-6.1-terra"      # OpenAI publishes no dated snapshot; the served `model` is recorded
+effort = "medium"            # the model's default, pinned explicitly (same level as Claude)
 max_tokens = 16000
 
 [[models]]
 name = "open-weight"         # local, with stated multilingual support
 provider = "ollama"
-model = "FILL_ME"            # an Ollama tag, e.g. what `ollama list` shows; the digest is recorded
+model = "gemma4:12b"         # Q4_K_M, ~8 GB; the weights' digest is recorded per call
 base_url = "http://localhost:11434"
-max_tokens = 4096
+max_tokens = 8192            # lower than the API models: what a 16 GB machine holds
+num_ctx = 16384              # Ollama's own default would be 4k on this machine
