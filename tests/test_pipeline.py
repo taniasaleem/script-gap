@@ -41,7 +41,8 @@ def synthetic_items():
                                    ("english", f"en question {g}")):
                 rows.append({"item_id": f"{g}.{script}", "parallel_group": g,
                              "task_type": t, "script": script, "prompt": prompt,
-                             "gold": "RIGHT", "author": "test", "built_on": "2026-11-20"})
+                             "gold": "RIGHT", "gold_notes": "accept RIGHT",
+                             "author": "test", "built_on": "2026-11-20"})
     return rows
 
 

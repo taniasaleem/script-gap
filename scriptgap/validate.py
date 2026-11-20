@@ -43,6 +43,9 @@ def validate(rows: list[dict]) -> tuple[list[str], list[str]]:
         expected_id = f"{r['parallel_group']}.{r['script']}"
         if r["item_id"] != expected_id:
             errors.append(f"{where}: item_id should be {expected_id!r}")
+        if r["task_type"] == "instruction" and not str(r.get("gold_notes", "")).strip():
+            errors.append(f"{where}: instruction item has no gold_notes; "
+                          "list every constraint there (RUBRIC.md)")
 
         ar = arabic_ratio(r["prompt"])
         if r["script"] == "nastaliq" and ar < 0.9:

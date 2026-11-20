@@ -12,9 +12,9 @@ Benchmarks test Urdu in Nastaliq. Most people in Pakistan type Roman Urdu: *"kya
 
 | Stage | State |
 |---|---|
-| Rubric and analysis plan | Written. Frozen and tagged `prereg` once the models are pinned in `config.toml`, before any model call |
+| Rubric and analysis plan | Written. Frozen together with the finished dataset under the tag `prereg`, before any model call |
 | Tooling (validate, run, score, agreement, analyze) | Done. `tests/test_pipeline.py` runs all five end to end on synthetic data, with a fake model and a scripted rater |
-| Dataset: 40 tasks × 3 scripts, hand-written | Being written. `python -m scriptgap.validate` prints how many of the 120 rows exist |
+| Dataset: 40 tasks × 3 scripts, hand-written | Being written, following [ITEM_WRITING.md](ITEM_WRITING.md). `python -m scriptgap.validate` prints how many of the 120 rows exist |
 | Model run, scoring, agreement check | Not started |
 | Finding | Written last, once the numbers exist |
 
@@ -26,7 +26,7 @@ Benchmarks test Urdu in Nastaliq. Most people in Pakistan type Roman Urdu: *"kya
 
 | | |
 |---|---|
-| **Items** | 40 tasks × 3 scripts = 120 prompts: 10 each of factual recall, instruction following, reasoning and false-premise abstention. Written by hand in Roman Urdu first, then rendered in Nastaliq and English by the same author. No machine translation. |
+| **Items** | 40 tasks × 3 scripts = 120 prompts: 10 each of factual recall, instruction following, reasoning and false-premise abstention. Written by hand in Roman Urdu first, then rendered in Nastaliq and English by the same author. No machine translation. The rules are in [ITEM_WRITING.md](ITEM_WRITING.md). |
 | **Models** | 3 (see `config.toml`): one frontier model, one model from a different lab, and one open-weight model run locally. The model version that served each call is recorded. |
 | **Prompting** | No system prompt, a single turn, and each provider's default sampling. |
 | **Scoring** | By hand, blind to model, against a rubric frozen before the first call ([RUBRIC.md](RUBRIC.md)). 45 responses are rescored on a different day to measure agreement. |
@@ -73,7 +73,7 @@ The runner needs `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`, and Ollama running lo
 
 ## Dataset format
 
-One JSON object per line in `data/items.jsonl`. `data/EXAMPLE.jsonl` shows one complete parallel group. `data/TEMPLATE.jsonl` has all 120 rows with their IDs, task types and scripts filled in and the text left blank: copy a group's three rows into `items.jsonl` once all three are written.
+One JSON object per line in `data/items.jsonl`. `data/EXAMPLE.jsonl` shows one complete parallel group. `data/TEMPLATE.jsonl` has all 120 rows with their IDs, task types and scripts filled in and the text left blank: copy a group's three rows into `items.jsonl` once all three are written. [ITEM_WRITING.md](ITEM_WRITING.md) says how each field is filled in.
 
 | Field | |
 |---|---|
@@ -81,7 +81,7 @@ One JSON object per line in `data/items.jsonl`. `data/EXAMPLE.jsonl` shows one c
 | `parallel_group` | Ties a task's three versions together. Every comparison is made within a group. |
 | `task_type` | `factual` / `instruction` / `reasoning` / `abstention` |
 | `script` | `english` / `nastaliq` / `roman_urdu` |
-| `prompt`, `gold`, `gold_notes` | `gold_notes` lists accepted variants and, for instruction items, every constraint. |
+| `prompt`, `gold`, `gold_notes` | `gold_notes` lists accepted variants and, for instruction items, every constraint. The validator rejects an instruction row with no `gold_notes`. |
 | `author`, `built_on` | Who wrote this version, and when. |
 | `derived_from` | Optional: `roman_urdu` on the Nastaliq and English rows. |
 

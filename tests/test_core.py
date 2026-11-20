@@ -40,6 +40,19 @@ def test_missing_script_and_wrong_script_detected():
     assert any("Arabic-script" in e for e in errors)
 
 
+def test_instruction_item_must_list_its_constraints():
+    # RUBRIC.md scores compliance against the constraints in gold_notes, so an
+    # instruction row without them cannot be scored against a fixed list.
+    rows = group("instr-01", t="instruction")
+    for r in rows:
+        r["gold_notes"] = "Constraints: (1) exactly 3 numbered points"
+    assert validate(rows)[0] == []
+    rows[1]["gold_notes"] = "  "
+    errors, _ = validate(rows)
+    assert errors == ["row 2 (instr-01.nastaliq): instruction item has no gold_notes; "
+                      "list every constraint there (RUBRIC.md)"]
+
+
 def test_progress_counts_only_complete_groups():
     rows = group("fact-01") + group("reason-01", t="reasoning")[:2]  # second group unfinished
     line = progress(rows)
@@ -51,10 +64,11 @@ def test_progress_counts_only_complete_groups():
 def test_template_fills_into_a_valid_full_dataset():
     rows = read_jsonl(ROOT / "data" / "TEMPLATE.jsonl")
     assert len(rows) == 120
-    assert all(r["prompt"] == r["gold"] == r["author"] == r["built_on"] == "" for r in rows)
+    assert all(r["prompt"] == r["gold"] == r["gold_notes"] == r["author"] == r["built_on"] == ""
+               for r in rows)
     for r in rows:  # what the author will do: fill every blank
         r["prompt"] = "یہ ایک سوال ہے" if r["script"] == "nastaliq" else "a question"
-        r.update(gold="x", author="tania", built_on="2026-11-21")
+        r.update(gold="x", gold_notes="accept x", author="tania", built_on="2026-11-21")
     errors, warnings = validate(rows)
     assert errors == [] and warnings == []
     assert {r["task_type"] for r in rows} == set(TASK_TYPES)
