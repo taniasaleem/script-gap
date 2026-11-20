@@ -16,6 +16,8 @@ from .common import DATA, SCRIPTS, TASK_TYPES, arabic_ratio, read_jsonl
 REQUIRED = ("item_id", "task_type", "script", "prompt", "gold",
             "parallel_group", "author", "built_on")
 TARGET_GROUPS_PER_TYPE = 10
+TARGET_GROUPS = TARGET_GROUPS_PER_TYPE * len(TASK_TYPES)
+TARGET_ROWS = TARGET_GROUPS * len(SCRIPTS)
 
 
 def validate(rows: list[dict]) -> tuple[list[str], list[str]]:
@@ -66,19 +68,34 @@ def validate(rows: list[dict]) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def progress(rows: list[dict]) -> str:
+    """How much of the planned dataset exists. A group counts as complete once
+    it has all three scripts; whether its rows are valid is validate()'s job."""
+    scripts: dict[str, set] = defaultdict(set)
+    task_type: dict[str, str] = {}
+    for r in rows:
+        scripts[r.get("parallel_group")].add(r.get("script"))
+        task_type[r.get("parallel_group")] = r.get("task_type")
+    complete = [g for g, s in scripts.items() if s == set(SCRIPTS)]
+    per_type = Counter(task_type[g] for g in complete)
+    by_type = ", ".join(f"{t} {per_type[t]}/{TARGET_GROUPS_PER_TYPE}" for t in TASK_TYPES)
+    return (f"{len(rows)} of {TARGET_ROWS} rows; {len(complete)} of {TARGET_GROUPS} "
+            f"parallel groups complete ({by_type})")
+
+
 def main(argv: list[str]) -> int:
     path = Path(argv[1]) if len(argv) > 1 else DATA
     rows = read_jsonl(path)
     if not rows:
-        print(f"{path}: no items yet")
+        print(f"{path}: no items yet. {progress(rows)}")
+        print("Copy one group at a time from data/TEMPLATE.jsonl and fill in the blanks.")
         return 1
     errors, warnings = validate(rows)
     for w in warnings:
         print(f"warning: {w}")
     for e in errors:
         print(f"ERROR: {e}")
-    n_groups = len({r.get('parallel_group') for r in rows})
-    print(f"{len(rows)} rows, {n_groups} parallel groups, {len(errors)} errors, {len(warnings)} warnings")
+    print(f"{progress(rows)}. {len(errors)} errors, {len(warnings)} warnings")
     return 1 if errors else 0
 
 

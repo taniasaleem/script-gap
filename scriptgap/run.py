@@ -29,6 +29,9 @@ def main(argv: list[str] | None = None) -> int:
 
     cfg = load_config()
     items = read_jsonl(DATA)
+    if not items:
+        print(f"{DATA} has no items; nothing to run.")
+        return 1
     errors, _ = validate(items)
     if errors:
         print("Dataset has errors; run `python -m scriptgap.validate` first.")

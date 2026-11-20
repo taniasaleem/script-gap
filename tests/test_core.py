@@ -1,7 +1,7 @@
-from scriptgap.common import suggest_reply_lang
+from scriptgap.common import ROOT, SCRIPTS, TASK_TYPES, read_jsonl, suggest_reply_lang
 from scriptgap.score import stratified_sample
 from scriptgap.stats import bootstrap_ci, cohen_kappa, sign_test_p
-from scriptgap.validate import validate
+from scriptgap.validate import progress, validate
 
 
 def group(g="fact-01", t="factual", **over):
@@ -38,6 +38,27 @@ def test_missing_script_and_wrong_script_detected():
     errors, _ = validate(rows)
     assert any("needs exactly one of each" in e for e in errors)
     assert any("Arabic-script" in e for e in errors)
+
+
+def test_progress_counts_only_complete_groups():
+    rows = group("fact-01") + group("reason-01", t="reasoning")[:2]  # second group unfinished
+    line = progress(rows)
+    assert line.startswith("5 of 120 rows; 1 of 40 parallel groups complete")
+    assert "factual 1/10" in line and "reasoning 0/10" in line
+    assert progress([]).startswith("0 of 120 rows; 0 of 40")
+
+
+def test_template_fills_into_a_valid_full_dataset():
+    rows = read_jsonl(ROOT / "data" / "TEMPLATE.jsonl")
+    assert len(rows) == 120
+    assert all(r["prompt"] == r["gold"] == r["author"] == r["built_on"] == "" for r in rows)
+    for r in rows:  # what the author will do: fill every blank
+        r["prompt"] = "یہ ایک سوال ہے" if r["script"] == "nastaliq" else "a question"
+        r.update(gold="x", author="tania", built_on="2026-11-21")
+    errors, warnings = validate(rows)
+    assert errors == [] and warnings == []
+    assert {r["task_type"] for r in rows} == set(TASK_TYPES)
+    assert {r["script"] for r in rows} == set(SCRIPTS)
 
 
 def test_reply_lang_heuristic():
