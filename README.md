@@ -1,5 +1,7 @@
 # script-gap
 
+[![tests](https://github.com/taniasaleem/script-gap/actions/workflows/tests.yml/badge.svg)](https://github.com/taniasaleem/script-gap/actions/workflows/tests.yml)
+
 **Does LLM quality drop when Urdu is written in Roman script?**
 
 Benchmarks test Urdu in Nastaliq. Most people in Pakistan type Roman Urdu: *"kya haal hai"*, not کیا حال ہے. This repo measures whether models answer the same question differently depending on which of the two scripts it is written in, with English as the reference.
