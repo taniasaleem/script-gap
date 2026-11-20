@@ -47,10 +47,14 @@ def call_openai(cfg: dict, prompt: str) -> dict:
     import openai
 
     client = openai.OpenAI()  # OPENAI_API_KEY
+    # As with Claude: when config.toml pins the effort, send it, so the record
+    # does not depend on the provider's default staying the same.
+    effort = cfg.get("effort")
     resp = client.chat.completions.create(
         model=cfg["model"],
         max_completion_tokens=cfg.get("max_tokens", 16000),
         messages=[{"role": "user", "content": prompt}],
+        **({"reasoning_effort": effort} if effort else {}),
     )
     choice = resp.choices[0]
     return {
@@ -60,7 +64,8 @@ def call_openai(cfg: dict, prompt: str) -> dict:
         "stop_reason": choice.finish_reason,
         "usage": {"input_tokens": resp.usage.prompt_tokens,
                   "output_tokens": resp.usage.completion_tokens},
-        "params": {"max_completion_tokens": cfg.get("max_tokens", 16000)},
+        "params": {"max_completion_tokens": cfg.get("max_tokens", 16000),
+                   "reasoning_effort": effort},
     }
 
 
@@ -83,13 +88,18 @@ def _ollama_digest(base: str, model: str) -> str:
 def call_ollama(cfg: dict, prompt: str) -> dict:
     base = cfg.get("base_url", "http://localhost:11434").rstrip("/")
     digest = _ollama_digest(base, cfg["model"])
+    options = {"num_predict": cfg.get("max_tokens", 4096)}
+    if "num_ctx" in cfg:
+        # Without it Ollama picks the window from GPU memory: 4k tokens below
+        # 24 GiB, which a thinking model's reasoning plus answer can overrun.
+        options["num_ctx"] = cfg["num_ctx"]
     r = requests.post(
         f"{base}/api/chat",
         json={
             "model": cfg["model"],
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
-            "options": {"num_predict": cfg.get("max_tokens", 4096)},
+            "options": options,
         },
         timeout=cfg.get("timeout_s", 600),
     )
@@ -101,7 +111,7 @@ def call_ollama(cfg: dict, prompt: str) -> dict:
         "stop_reason": data.get("done_reason"),
         "usage": {"input_tokens": data.get("prompt_eval_count"),
                   "output_tokens": data.get("eval_count")},
-        "params": {"num_predict": cfg.get("max_tokens", 4096)},
+        "params": options,
     }
 
 

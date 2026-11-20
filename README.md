@@ -37,8 +37,8 @@ Benchmarks test Urdu in Nastaliq. Most people in Pakistan type Roman Urdu: *"kya
 | Role | Model | Why |
 |---|---|---|
 | Frontier | Claude Opus 5.5 (`claude-opus-5-5`) | A current frontier model. If the gap exists even here, it is a property of the field rather than of weak models. |
-| Different lab, mid-tier or older | *to be chosen before the run* | Shows whether a gap is specific to one lab's training data. |
-| Open-weight, stated multilingual support | *to be chosen before the run* | The kind of model a Pakistani company could self-host. It is run locally through Ollama, and the weights' digest is recorded. |
+| Different lab, mid-tier | GPT-6.1 Terra (`gpt-6.1-terra`), effort `medium` | Shows whether a gap is specific to one lab's training data. It is OpenAI's current mid-tier model. Older OpenAI models were ruled out because they are scheduled to shut down before the study could finish: `gpt-5-mini` on 11 December 2026, and `gpt-4o-mini` and `gpt-4.1-mini` on 14 January 2027. Effort is pinned at the model's default, which is also the level Claude runs at. OpenAI publishes no dated snapshot of it, so the served `model` field is the only version record. |
+| Open-weight, stated multilingual support | Gemma 4 12B (`gemma4:12b`, 4-bit) | The kind of model a Pakistani company could self-host, and a third lab. Its model card claims over 140 languages without listing them, so its Urdu support rests on that count alone. It fits on a 16 GB laptop and is run locally through Ollama with a 16k-token context window. The weights' digest is recorded. |
 
 Three is enough to tell whether a gap belongs to one model or to all of them. The exact model IDs go into `config.toml`, and the version that served each call is recorded with every response. These results describe those versions on the run date, and they will expire as models change.
 
@@ -69,7 +69,7 @@ python -m scriptgap.agreement --run-id 2026-11-22
 python -m scriptgap.analyze --run-id 2026-11-22                # results/summary.md + charts
 ```
 
-The runner needs `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`, and Ollama running locally with the open-weight model pulled.
+The runner needs `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`, and Ollama running locally with the open-weight model pulled (`ollama pull gemma4:12b`).
 
 ## Dataset format
 
@@ -104,6 +104,7 @@ results/         summary.md, agreement.md, charts
 - **One rater.** The agreement figure is intra-rater: the same person on two different days. It is not agreement between independent raters.
 - **Partial blinding.** The scorer hides the model's name, but a response can still give its model away, for example by naming itself. The prompt's script cannot be hidden, because the rater has to read it.
 - **Small cells.** Each task type has about 10 parallel groups, so per-type gaps are descriptive. Only the pooled gap per model is tested.
+- **Unequal output limits.** The local model may write up to 8,192 tokens and the API models up to 16,000, because of what a 16 GB machine holds. A reply that hits its limit is recorded with that stop reason and shown to the scorer.
 - **Versions expire.** Three models on specific dates. The results describe those versions, not the models' later releases.
 
 These are findings about this dataset, not a general claim about Urdu capability.
