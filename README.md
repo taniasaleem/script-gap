@@ -10,7 +10,7 @@ Benchmarks test Urdu in Nastaliq. Most people in Pakistan type Roman Urdu: *"kya
 
 | Stage | State |
 |---|---|
-| Rubric and analysis plan | Frozen and tagged [`prereg`](../../tree/prereg) before any model call |
+| Rubric and analysis plan | Frozen and tagged [`prereg`](https://github.com/taniasaleem/script-gap/tree/prereg) before any model call |
 | Tooling (validate, run, score, agreement, analyze) | Done, tested end to end on synthetic data |
 | Dataset: 40 tasks × 3 scripts, hand-written | Being written |
 | Model run, scoring, agreement check | Not started |
