@@ -6,13 +6,13 @@ Benchmarks test Urdu in Nastaliq. Most people in Pakistan type Roman Urdu: *"kya
 
 ## Status
 
-**In progress. The study is pre-registered; the data has not been collected yet.**
+**In progress. The rubric and analysis plan are written, the dataset is being written, and no model has been called.**
 
 | Stage | State |
 |---|---|
-| Rubric and analysis plan | Frozen and tagged [`prereg`](https://github.com/taniasaleem/script-gap/tree/prereg) before any model call |
-| Tooling (validate, run, score, agreement, analyze) | Done, tested end to end on synthetic data |
-| Dataset: 40 tasks × 3 scripts, hand-written | Being written |
+| Rubric and analysis plan | Written. Frozen and tagged `prereg` once the models are pinned in `config.toml`, before any model call |
+| Tooling (validate, run, score, agreement, analyze) | Done. `tests/test_pipeline.py` runs all five end to end on synthetic data, with a fake model and a scripted rater |
+| Dataset: 40 tasks × 3 scripts, hand-written | Being written. `python -m scriptgap.validate` prints how many of the 120 rows exist |
 | Model run, scoring, agreement check | Not started |
 | Finding | Written last, once the numbers exist |
 
@@ -55,9 +55,9 @@ Requires **Python 3.11 or later** (the config is read with `tomllib`).
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q                         # sanity-check the tooling
+python -m pytest -q                         # unit tests, plus the whole pipeline on synthetic data
 
-python -m scriptgap.validate                # check data/items.jsonl
+python -m scriptgap.validate                # check data/items.jsonl and show progress
 python -m scriptgap.run --run-id 2026-11-22 --limit 3   # smoke test: 3 items x 3 models
 python -m scriptgap.run --run-id 2026-11-22             # full run; re-run to resume or retry failures
 
@@ -71,7 +71,7 @@ The runner needs `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`, and Ollama running lo
 
 ## Dataset format
 
-One JSON object per line in `data/items.jsonl`. `data/EXAMPLE.jsonl` shows one complete parallel group.
+One JSON object per line in `data/items.jsonl`. `data/EXAMPLE.jsonl` shows one complete parallel group. `data/TEMPLATE.jsonl` has all 120 rows with their IDs, task types and scripts filled in and the text left blank: copy a group's three rows into `items.jsonl` once all three are written.
 
 | Field | |
 |---|---|
@@ -86,8 +86,9 @@ One JSON object per line in `data/items.jsonl`. `data/EXAMPLE.jsonl` shows one c
 ## Repository
 
 ```
-data/            items.jsonl (the dataset), EXAMPLE.jsonl
+data/            items.jsonl (the dataset), EXAMPLE.jsonl, TEMPLATE.jsonl
 scriptgap/       validate, run, score, agreement, analyze, providers, stats
+tests/           unit tests and the end-to-end pipeline test
 results/runs/    raw responses, one file per run
 results/scores/  hand scores, <run>.pass1.jsonl and <run>.pass2.jsonl
 results/         summary.md, agreement.md, charts
