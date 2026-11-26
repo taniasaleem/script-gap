@@ -23,6 +23,7 @@ Write a one-line idea for every task first, ten per type, and check the set as a
 - **Don't use famous puzzles or riddles.** Models have likely memorised the English version, which would favour English for a reason that has nothing to do with script.
 - **Don't use facts that change or are disputed:** populations, records, current office-holders, recent events.
 - **Don't use tasks whose answer depends on the script**, such as counting letters, spelling, rhyme or alphabetical order. They are not the same task in three scripts.
+- **Don't use topics that invite hedging or refusal:** health or legal advice, religious rulings, politics. Models often hedge or refuse on these, and may do so differently in each script. The rubric scores a refusal as 0 (RUBRIC.md, correctness), so safety behaviour would be mixed into the quality score.
 
 ## 2. Write one group at a time, in this order
 
@@ -64,6 +65,7 @@ Constraints: (1) exactly 3 numbered points; (2) no opening sentence; (3) each po
 
 - **No machine translation**, not even to check a version.
 - **Don't try any item on any model while writing.** Keeping or editing items according to how a model answers them would bias the study.
+- **A model may suggest topic areas, never items.** Treat a model's topic ideas as categories only. The specific fact, numbers and false premise come from your own knowledge, and the README says which model was used. Some of this study's topic areas came from Claude, one of the models tested.
 - **Keep your natural Roman Urdu spelling.** Single-author spelling is a stated limit of the study, not something to correct.
 - **Commit after each sitting.** The dated commits are the public record that the items were written before any model run.
 

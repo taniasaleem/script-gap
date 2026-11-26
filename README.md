@@ -105,10 +105,11 @@ results/         summary.md, agreement.md, charts
 - **Partial blinding.** The scorer hides the model's name, but a response can still give its model away, for example by naming itself. The prompt's script cannot be hidden, because the rater has to read it.
 - **Small cells.** Each task type has about 10 parallel groups, so per-type gaps are descriptive. Only the pooled gap per model is tested.
 - **Unequal output limits.** The local model may write up to 8,192 tokens and the API models up to 16,000, because of what a 16 GB machine holds. A reply that hits its limit is recorded with that stop reason and shown to the scorer.
+- **Some topics suggested by a tested model.** Some topic areas came from brainstorming with Claude Opus 5.5, one of the three models. The items themselves are mine, but the topics may lean toward what Claude knows well. Pairing within each task cancels out how hard a topic is, but not a topic that Claude knows better in English than in Urdu.
 - **Versions expire.** Three models on specific dates. The results describe those versions, not the models' later releases.
 
 These are findings about this dataset, not a general claim about Urdu capability.
 
 ## How this was built
 
-The study design, the dataset, the rubric and every score are mine. The runner and analysis code were written with Claude Code.
+The study design, the dataset, the rubric and every score are mine. Some topic areas for the items were brainstormed with Claude Opus 5.5, which is also one of the models tested. Every item, its three versions and its gold answer were written by me, with the specific facts, numbers and false premises chosen from my own knowledge. The runner and analysis code were written with Claude Code.
